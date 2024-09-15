@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "180443184338",
+    "project_id": "herolegends-9b5ae",
+    "storage_bucket": "herolegends-9b5ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180443184338:android:2650e72acd91f2a855810b",
+        "android_client_info": {
+          "package_name": "com.pandascr.herolegends"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYpqE_9J4rULvJos3sCdzvyv69uJc-Fj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
