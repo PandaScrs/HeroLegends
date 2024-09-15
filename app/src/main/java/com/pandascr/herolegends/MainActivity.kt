@@ -82,6 +82,9 @@ class MainActivity : ComponentActivity() {
                 composable("home") {
                     HomeScreen(navController)
                 }
+                composable("login") {
+                    LoginScreen(navController)
+                }
                 composable("loading") {
                     LoadingScreen(navController)
                 }

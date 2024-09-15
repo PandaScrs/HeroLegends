@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.firebase.ui.auth)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.navigation.compose)
+    implementation(libs.firebase.auth)
 }

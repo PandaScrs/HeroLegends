@@ -30,6 +30,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun MenuScreen(navController: NavController) {
@@ -90,7 +91,10 @@ fun MenuScreen(navController: NavController) {
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(end = 22.dp)
-                    .clickable { (context as Activity).finish() }
+                    .clickable {
+                        FirebaseAuth.getInstance().signOut() // Desconectar la cuenta
+                        (context as Activity).finish() // Cerrar el juego
+                    }
             )
         }
     }
