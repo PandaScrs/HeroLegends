@@ -23,21 +23,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.ui.platform.LocalInspectionMode
 
 @Composable
 fun MenuScreen(navController: NavController) {
     val context = LocalContext.current
-    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.menu_background_sound) }
-    mediaPlayer.isLooping = true
-    mediaPlayer.start()
+    val isInPreview = LocalInspectionMode.current
+
+    if (!isInPreview) {
+        val mediaPlayer = remember { MediaPlayer.create(context, R.raw.menu_background_sound) }
+        mediaPlayer.isLooping = true
+        mediaPlayer.start()
+    }
 
     Box(
         modifier = Modifier
@@ -100,3 +107,9 @@ fun MenuScreen(navController: NavController) {
     }
 }
 
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+fun MenuScreenPreview() {
+    val navController = rememberNavController()
+    MenuScreen(navController = navController)
+}
