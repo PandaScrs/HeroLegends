@@ -190,42 +190,57 @@ fun registerUser(email: String, password: String, username: String, context: and
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
 
+    // Verificar si el nombre de usuario ya está en uso
     db.collection("users").whereEqualTo("username", username).get()
         .addOnSuccessListener { documents ->
             if (documents.isEmpty) {
+                // Nombre de usuario disponible, proceder con el registro
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         isLoading.value = false
                         if (task.isSuccessful) {
+                            // Obtener el UID del usuario recién creado
+                            val userId = auth.currentUser!!.uid
+
+                            // Crear el objeto usuario con la información adicional
                             val user = hashMapOf(
                                 "username" to username,
                                 "email" to email
                             )
-                            db.collection("users").document(auth.currentUser!!.uid).set(user)
+
+                            // Guardar el usuario en Firestore con el UID como el documento
+                            db.collection("users").document(userId).set(user)
                                 .addOnSuccessListener {
+                                    // Navegar al menú principal
                                     navController.navigate("menu")
                                 }
                                 .addOnFailureListener { e ->
+                                    // Manejo de error al guardar los datos en Firestore
                                     errorMessage.value = "Error al guardar los datos: ${e.message}"
                                     Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
                                 }
                         } else {
+                            // Manejo de error al crear el usuario en FirebaseAuth
                             errorMessage.value = "Error al registrar: ${task.exception?.message}"
                             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
                         }
                     }
             } else {
+                // Nombre de usuario ya está en uso
                 isLoading.value = false
                 errorMessage.value = "El nombre de usuario ya está en uso."
                 Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
             }
         }
         .addOnFailureListener { e ->
+            // Manejo de error al verificar el nombre de usuario
             isLoading.value = false
             errorMessage.value = "Error al verificar el nombre de usuario: ${e.message}"
             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
         }
 }
+
+
 
 fun loginUser(email: String, password: String, context: android.content.Context, navController: NavController, isLoading: MutableState<Boolean>, errorMessage: MutableState<String?>) {
     FirebaseAuth.getInstance()

@@ -40,8 +40,8 @@ fun MenuScreen(navController: NavController) {
     val context = LocalContext.current
     val isInPreview = LocalInspectionMode.current
 
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.menu_background_sound) }
     if (!isInPreview) {
-        val mediaPlayer = remember { MediaPlayer.create(context, R.raw.menu_background_sound) }
         mediaPlayer.isLooping = true
         mediaPlayer.start()
     }
@@ -86,7 +86,7 @@ fun MenuScreen(navController: NavController) {
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(end = 34.dp, bottom = 5.dp)
-                    .clickable { /* Navegar a la pantalla de juego */ }
+                    .clickable { navController.navigate("natureMap") }
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -99,8 +99,10 @@ fun MenuScreen(navController: NavController) {
                     .align(Alignment.End)
                     .padding(end = 22.dp)
                     .clickable {
-                        FirebaseAuth.getInstance().signOut() // Desconectar la cuenta
-                        (context as Activity).finish() // Cerrar el juego
+                        FirebaseAuth.getInstance().signOut()
+                        mediaPlayer.stop()
+                        mediaPlayer.release()
+                        (context as Activity).finish()
                     }
             )
         }

@@ -32,6 +32,6 @@ fun LoadingScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Text("Cargando...", modifier = Modifier.align(Alignment.Center))
+        Text(" ", modifier = Modifier.align(Alignment.Center))
     }
 }
