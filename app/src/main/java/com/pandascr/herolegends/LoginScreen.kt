@@ -3,7 +3,6 @@ package com.pandascr.herolegends
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -31,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 @Composable
 fun LoginScreen(navController: NavController) {
     var showRegisterFields by remember { mutableStateOf(false) }
+    var showRecoverPasswordFields by remember { mutableStateOf(false) }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val username = remember { mutableStateOf("") }
@@ -64,14 +64,22 @@ fun LoginScreen(navController: NavController) {
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = if (showRegisterFields) "Registro" else "Inicio de Sesión",
+            text = when {
+                showRegisterFields -> "Registro"
+                showRecoverPasswordFields -> "Recuperar Contraseña"
+                else -> "Inicio de Sesión"
+            },
             color = Color.White,
             fontSize = 52.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 2.dp)
         )
         Text(
-            text = if (showRegisterFields) "Por favor, complete los campos para registrarse." else "No se ha detectado ninguna cuenta, por favor, inicie sesión.",
+            text = when {
+                showRegisterFields -> "Por favor, complete los campos para registrarse."
+                showRecoverPasswordFields -> "Por favor, ingrese su correo electrónico para recuperar la contraseña."
+                else -> "No se ha detectado ninguna cuenta, por favor, inicie sesión."
+            },
             color = Color.White,
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
         )
@@ -115,23 +123,25 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = { Text("Contraseña", color = Color.White) },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(start = 16.dp)
-                .background(Color.Transparent),
-            visualTransformation = PasswordVisualTransformation(),
-            textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.White,
-                cursorColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White
+        if (!showRecoverPasswordFields) {
+            TextField(
+                value = password.value,
+                onValueChange = { password.value = it },
+                label = { Text("Contraseña", color = Color.White) },
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(start = 16.dp)
+                    .background(Color.Transparent),
+                visualTransformation = PasswordVisualTransformation(),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White
+                )
             )
-        )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -140,34 +150,74 @@ fun LoginScreen(navController: NavController) {
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(
-                onClick = {
-                    showRegisterFields = !showRegisterFields
-                },
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                Text(text = if (showRegisterFields) "Cancelar Registro" else "Registrarse")
-            }
-
-            if (!showRegisterFields) {
-                Button(
-                    onClick = {
-                        isLoading.value = true
-                        loginUser(email.value, password.value, context, navController, isLoading, errorMessage)
-                    },
-                    modifier = Modifier.align(Alignment.CenterStart)
+            if (showRegisterFields) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Iniciar Sesión")
+                    Button(
+                        onClick = {
+                            isLoading.value = true
+                            registerUser(email.value, password.value, username.value, context, navController, isLoading, errorMessage)
+                        },
+                        modifier = Modifier.padding(start = 20.dp)
+                    ) {
+                        Text("Registrarse")
+                    }
+                    Button(
+                        onClick = { showRegisterFields = false },
+                        modifier = Modifier.padding(end = 20.dp)
+                    ) {
+                        Text("Cancelar Registro")
+                    }
+                }
+            } else if (showRecoverPasswordFields) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = {
+                            isLoading.value = true
+                            recoverPassword(email.value, password.value, context, navController, isLoading, errorMessage)
+                        },
+                        modifier = Modifier.padding(start = 20.dp)
+                    ) {
+                        Text("Enviar correo de Recuperación")
+                    }
+                    Button(
+                        onClick = { showRecoverPasswordFields = false },
+                        modifier = Modifier.padding(end = 20.dp)
+                    ) {
+                        Text("Cancelar")
+                    }
                 }
             } else {
-                Button(
-                    onClick = {
-                        isLoading.value = true
-                        registerUser(email.value, password.value, username.value, context, navController, isLoading, errorMessage)
-                    },
-                    modifier = Modifier.align(Alignment.CenterStart)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Confirmar Registro")
+                    Button(
+                        onClick = {
+                            isLoading.value = true
+                            loginUser(email.value, password.value, context, navController, isLoading, errorMessage)
+                        },
+                        modifier = Modifier.padding(start = 20.dp)
+                    ) {
+                        Text("Iniciar Sesión")
+                    }
+                    Button(
+                        onClick = { showRecoverPasswordFields = true },
+                        modifier = Modifier.padding(start = 20.dp)
+                    ) {
+                        Text("Recuperar Contraseña")
+                    }
+                    Button(
+                        onClick = { showRegisterFields = true },
+                        modifier = Modifier.padding(end = 20.dp)
+                    ) {
+                        Text("Registrarse")
+                    }
                 }
             }
         }
@@ -190,57 +240,31 @@ fun registerUser(email: String, password: String, username: String, context: and
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
 
-    // Verificar si el nombre de usuario ya está en uso
     db.collection("users").whereEqualTo("username", username).get()
         .addOnSuccessListener { documents ->
             if (documents.isEmpty) {
-                // Nombre de usuario disponible, proceder con el registro
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         isLoading.value = false
                         if (task.isSuccessful) {
-                            // Obtener el UID del usuario recién creado
-                            val userId = auth.currentUser!!.uid
-
-                            // Crear el objeto usuario con la información adicional
-                            val user = hashMapOf(
-                                "username" to username,
-                                "email" to email
-                            )
-
-                            // Guardar el usuario en Firestore con el UID como el documento
-                            db.collection("users").document(userId).set(user)
-                                .addOnSuccessListener {
-                                    // Navegar al menú principal
-                                    navController.navigate("menu")
-                                }
-                                .addOnFailureListener { e ->
-                                    // Manejo de error al guardar los datos en Firestore
-                                    errorMessage.value = "Error al guardar los datos: ${e.message}"
-                                    Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
-                                }
+                            navController.navigate("menu")
                         } else {
-                            // Manejo de error al crear el usuario en FirebaseAuth
                             errorMessage.value = "Error al registrar: ${task.exception?.message}"
                             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
                         }
                     }
             } else {
-                // Nombre de usuario ya está en uso
                 isLoading.value = false
                 errorMessage.value = "El nombre de usuario ya está en uso."
                 Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
             }
         }
         .addOnFailureListener { e ->
-            // Manejo de error al verificar el nombre de usuario
             isLoading.value = false
             errorMessage.value = "Error al verificar el nombre de usuario: ${e.message}"
             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
         }
 }
-
-
 
 fun loginUser(email: String, password: String, context: android.content.Context, navController: NavController, isLoading: MutableState<Boolean>, errorMessage: MutableState<String?>) {
     FirebaseAuth.getInstance()
@@ -263,5 +287,37 @@ fun loginUser(email: String, password: String, context: android.content.Context,
                 errorMessage.value = errorMessageText
                 Toast.makeText(context, errorMessageText, Toast.LENGTH_LONG).show()
             }
+        }
+}
+
+fun recoverPassword(email: String, newPassword: String, context: android.content.Context, navController: NavController, isLoading: MutableState<Boolean>, errorMessage: MutableState<String?>) {
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
+
+    db.collection("users").whereEqualTo("email", email).get()
+        .addOnSuccessListener { documents ->
+            if (!documents.isEmpty) {
+                val userId = documents.documents[0].id
+                auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        isLoading.value = false
+                        if (task.isSuccessful) {
+                            Toast.makeText(context, "Correo de recuperación enviado.", Toast.LENGTH_LONG).show()
+                            navController.navigate("login")
+                        } else {
+                            errorMessage.value = "Error al enviar correo de recuperación: ${task.exception?.message}"
+                            Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
+                        }
+                    }
+            } else {
+                isLoading.value = false
+                errorMessage.value = "No se encontró una cuenta con este correo electrónico."
+                Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
+            }
+        }
+        .addOnFailureListener { e ->
+            isLoading.value = false
+            errorMessage.value = "Error al verificar el correo electrónico: ${e.message}"
+            Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
         }
 }
