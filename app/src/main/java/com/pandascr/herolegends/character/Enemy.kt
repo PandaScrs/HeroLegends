@@ -6,5 +6,11 @@ class Enemy(
     defense: Int,
     damage: Int
 ) : Character(health, shield, defense, damage) {
-    // Aquí puedes agregar métodos específicos del enemigo
+    var x: Float = 0f
+    var y: Float = 0f
+    var moveSpeed: Float = 4.5f
+    var attackCooldown: Long = 0L
+    var directionX: Float = 0f
+    var directionY: Float = 0f
+    var changeDirectionCooldown: Long = 0L
 }

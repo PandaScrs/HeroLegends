@@ -247,7 +247,22 @@ fun registerUser(email: String, password: String, username: String, context: and
                     .addOnCompleteListener { task ->
                         isLoading.value = false
                         if (task.isSuccessful) {
-                            navController.navigate("menu")
+                            val user = task.result?.user
+                            val userId = user?.uid
+                            if (userId != null) {
+                                val userMap = hashMapOf(
+                                    "email" to email,
+                                    "username" to username
+                                )
+                                db.collection("users").document(userId).set(userMap)
+                                    .addOnSuccessListener {
+                                        navController.navigate("menu")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        errorMessage.value = "Error al registrar en la base de datos: ${e.message}"
+                                        Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()
+                                    }
+                            }
                         } else {
                             errorMessage.value = "Error al registrar: ${task.exception?.message}"
                             Toast.makeText(context, errorMessage.value, Toast.LENGTH_LONG).show()

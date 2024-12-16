@@ -18,10 +18,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 
-
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.ui.draw.alpha
-
 @Composable
 fun HomeScreen(navController: NavController) {
     var isClicked by remember { mutableStateOf(false) }

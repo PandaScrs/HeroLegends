@@ -20,10 +20,10 @@ fun LoadingScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         delay(500)
         if (user != null) {
-            navController.navigate("menu") // Redirigir al Menú Principal
+            navController.navigate("menu") // Redirigir al Menú Principal si existe cuenta
         } else {
             delay(1000)
-            navController.navigate("login") // Redirigir al login
+            navController.navigate("login") // Redirigir al login si no hay cuenta activa
         }
     }
 

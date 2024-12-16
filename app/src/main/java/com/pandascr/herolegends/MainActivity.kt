@@ -31,13 +31,13 @@ class MainActivity : ComponentActivity() {
         FirebaseFirestore.setLoggingEnabled(true)
         FirebaseApp.initializeApp(this)
 
-        // Crear la instancia del Player fuera de setContent
+        // Crear la instancia del Player, y establecer sus estadísticas
         val player = Player(
             health = 100,
             shield = 50,
             defense = 20,
             damage = 30,
-            moveSpeed = 0.2f // Ajusta la velocidad según sea necesario
+            moveSpeed = 0.2f
         )
 
         setContent {
@@ -54,14 +54,13 @@ class MainActivity : ComponentActivity() {
         val intent = intent
 
         if (auth.isSignInWithEmailLink(intent.data.toString())) {
-            val email = "user@example.com" // Obtener el correo de alguna forma (por ejemplo, SharedPreferences o del usuario)
+            val email = "user@example.com"
 
             auth.signInWithEmailLink(email, intent.data.toString())
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Log.d("EmailLinkLogin", "Sign-in successful")
                         val user = task.result?.user
-                        // Navegar a la pantalla principal o realizar alguna acción
                     } else {
                         Log.e("EmailLinkLogin", "Error signing in", task.exception)
                     }
@@ -102,8 +101,7 @@ fun MyApp(navController: NavHostController, player: Player) {
                 MenuScreen(navController)
             }
             composable("natureMap") {
-                // Pasar la instancia del Player al NatureMap
-                NatureMap(player = player)
+                NatureMap(player = player, navController = navController)
             }
         }
     }

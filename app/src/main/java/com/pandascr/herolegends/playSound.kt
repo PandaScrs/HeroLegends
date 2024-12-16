@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
+// Desuso de la función playSound (directamente hecha en HomeScreen.kt, y otros archivos)
+
 @Composable
 fun playSound(resourceId: Int) {
     val context = LocalContext.current

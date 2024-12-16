@@ -7,5 +7,5 @@ class Player(
     damage: Int,
     var moveSpeed: Float
 ) : Character(health, shield, defense, damage) {
-    // Aquí puedes agregar métodos específicos del jugador
+    // nohacenada
 }

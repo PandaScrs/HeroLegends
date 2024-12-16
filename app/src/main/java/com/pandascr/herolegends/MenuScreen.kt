@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,13 @@ fun MenuScreen(navController: NavController) {
     if (!isInPreview) {
         mediaPlayer.isLooping = true
         mediaPlayer.start()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+        }
     }
 
     Box(
@@ -86,7 +94,10 @@ fun MenuScreen(navController: NavController) {
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(end = 34.dp, bottom = 5.dp)
-                    .clickable { navController.navigate("natureMap") }
+                    .clickable {
+                        mediaPlayer.stop()
+                        navController.navigate("natureMap")
+                    }
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
